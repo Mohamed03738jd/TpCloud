@@ -4,8 +4,13 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
   test: {
-    globals: true,       // <-- active `test`, `expect` globalement
-    environment: 'jsdom' // <-- nécessaire pour React
+    globals: true,
+    environment: 'jsdom'
   }
 });
