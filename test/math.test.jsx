@@ -3,7 +3,7 @@ import { add, multiply } from '../src/utils/math';
 
 test('add function adds two numbers', () => {
   expect(add(2, 3)).toBe(6);
-  expect(add(-1, 1)).toBe(6);
+  expect(add(-1, 1)).toBe(0);
 });
 
 test('multiply function multiplies two numbers', () => {
