@@ -2,45 +2,65 @@ pipeline {
     agent any
 
     environment {
-        NODE_VERSION = '20'
+        GITHUB_TOKEN = credentials('github-token')
+        REPO = "Mohamed03738jd/TpCloud"
     }
 
     stages {
+
         stage('Install dependencies') {
             steps {
-                echo 'Installing Node.js dependencies...'
                 sh 'npm install'
             }
         }
 
         stage('Lint') {
             steps {
-                echo 'Running ESLint...'
                 sh 'npm run lint'
             }
         }
 
         stage('Run tests') {
             steps {
-                echo 'Running Vitest...'
                 sh 'npm test'
             }
         }
 
         stage('Build production') {
             steps {
-                echo 'Building production app...'
                 sh 'npm run build'
             }
         }
     }
 
     post {
+
         success {
-            echo 'Bravo, déploiement réussi !'
+            echo "Build success"
+
+            sh """
+            curl -X POST https://api.github.com/repos/${REPO}/statuses/${GIT_COMMIT} \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -d '{
+              "state": "success",
+              "description": "Pipeline succeeded",
+              "context": "jenkins-ci"
+            }'
+            """
         }
+
         failure {
-            echo 'Le build a échoué. Vérifie les logs.'
+            echo "Build failed"
+
+            sh """
+            curl -X POST https://api.github.com/repos/${REPO}/statuses/${GIT_COMMIT} \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -d '{
+              "state": "failure",
+              "description": "Pipeline failed",
+              "context": "jenkins-ci"
+            }'
+            """
         }
     }
 }
